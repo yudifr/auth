@@ -46,10 +46,11 @@ exports.newConsumer = (async (req, res) => {
             no_telp) VALUES(
             '${jenis}','${nama}','${alamat}','${kab_kota}','${provinsi}','${email}','${no_telp}'
               )
-        `;
+              RETURNING id
+        `;  
     try {
         const result = await db.query(query);
-        return response.ok('ok', 'data created', res);
+        return response.ok('ok', result.rows, res);
     } catch (error) {
         return response.badRequest(error, res);
         // console.log(error)
