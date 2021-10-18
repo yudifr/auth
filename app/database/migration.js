@@ -11,7 +11,8 @@ function createConsumerTable (){
     alamat VARCHAR(40) NOT NULL, 
     kab_kota VARCHAR(15) NOT NULL, 
     provinsi VARCHAR(15) NOT NULL, 
-    email VARCHAR(40) NOT NULL, 
+    kecamatan VARCHAR(15) NOT NULL, 
+    kelurahan VARCHAR(15) NOT NULL, 
     no_telp VARCHAR(15) NOT NULL
     )
     `;

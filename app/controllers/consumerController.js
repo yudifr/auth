@@ -23,16 +23,29 @@ exports.getConsumerId = (async (req, res) => {
         return response.badRequest(error, res);
     }
 });
+exports.getConsumerIdByName = (async (req, res) => {
+    var query = "select id from consumer where nama = '" + req.params.name+"'";
+    try {
+        const result = await db.query(query);
+        if (result.rowCount == 0) {
+            return response.badRequest('no data', res)
+        }
+        return response.ok('ok', result.rows, res);
 
+    } catch (error) {
+        return response.badRequest(error, res);
+    }
+});
 
 exports.newConsumer = (async (req, res) => {
     const {
         jenis,
         nama,
         alamat,
-        kab_kota,
         provinsi,
-        email,
+        kab_kota,
+        kecamatan,
+        kelurahan,
         no_telp
     } = req.body;
     var query = `
@@ -40,11 +53,12 @@ exports.newConsumer = (async (req, res) => {
         (jenis,
             nama,
             alamat,
-            kab_kota,
             provinsi,
-            email,
+            kab_kota,
+            kecamatan,
+            kelurahan,
             no_telp) VALUES(
-            '${jenis}','${nama}','${alamat}','${kab_kota}','${provinsi}','${email}','${no_telp}'
+            '${jenis}','${nama}','${alamat}','${provinsi}','${kab_kota}','${kecamatan}','${kelurahan}','${no_telp}'
               )
               RETURNING id
         `;  
