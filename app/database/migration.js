@@ -1,13 +1,25 @@
-const pool = require('./pool');
-pool.on('connect',()=>{
-    console.log('connected to db');
+const pool = require("./pool");
+pool.on("connect", () => {
+  console.log("connected to db");
 });
-
-function createConsumerTable (){
-    const query =  `CREATE TABLE IF NOT EXISTS consumer
+function poolQuery(query) {
+  pool
+    .query(query)
+    .then((res) => {
+      console.log(res);
+      pool.end();
+    })
+    .catch((err) => {
+      console.log(err);
+      pool.end();
+    });
+}
+function createInstitutionTable() {
+  const query = `CREATE TABLE IF NOT EXISTS institution
     (id SERIAL PRIMARY KEY, 
-        jenis VARCHAR(15) NOT NULL, 
+      kode_sekolah VARCHAR(15) NOT NULL, 
     nama VARCHAR(30) UNIQUE NOT NULL , 
+    tipe VARCHAR(40) NOT NULL, 
     alamat VARCHAR(40) NOT NULL, 
     kab_kota VARCHAR(15) NOT NULL, 
     provinsi VARCHAR(15) NOT NULL, 
@@ -16,50 +28,65 @@ function createConsumerTable (){
     no_telp VARCHAR(15) NOT NULL
     )
     `;
+  poolQuery(query);
+}
+function createFacultiesTable() {
+  const query = `CREATE TABLE IF NOT EXISTS faculties
+    (id SERIAL PRIMARY KEY, 
+      id_institusi VARCHAR(15) NOT NULL, 
+      nama_fakultas VARCHAR(30) UNIQUE NOT NULL , 
+      email_fakultas VARCHAR(40) NOT NULL, 
+    )
+    `;
+  poolQuery(query);
+}
+function createMajorinstitutionTable() {
+  const query = `CREATE TABLE IF NOT EXISTS majors
+    (id SERIAL PRIMARY KEY, 
+      id_institusi VARCHAR(15) NOT NULL, 
+      id_fakultas VARCHAR(30) UNIQUE NOT NULL , 
+      nama_prodi VARCHAR(40) NOT NULL, 
+      email_prodi VARCHAR(15) NOT NULL, 
+    )
+    `;
+  poolQuery(query);
+}
 
-    pool.query(query)
-    .then((res)=>{
-        console.log(res);
-        pool.end();
-    }).catch((err)=>{
-        console.log(err);
-        pool.end();
-    });
+const dropInstitutionTable = () => {
+  const query = "drop table if exists institution";
+  poolQuery(query);
+};
+const dropFacultiesTable = () => {
+  const query = "drop table if exists faculties";
+  poolQuery(query);
+};
+const dropMajorTable = () => {
+  const query = "drop table if exists majors";
+  poolQuery(query);
 };
 
-const dropConsumerTable=()=>{
-    const query = 'drop table if exists consumer';
-    pool.query(query)
-    .then((res)=>{
-        console.log(res);
-        pool.end();
-    }).catch((err)=>{
-        console.log(err);
-        pool.end();
-    });
+const createAllTables = () => {
+  createInstitutionTable();
+  createFacultiesTable();
+  createMajorinstitutionTable();
 };
 
-const createAllTables=()=>{
-    createConsumerTable();
-    
+const dropAllTables = () => {
+  dropInstitutionTable();
+  dropFacultiesTable();
+  dropMajorTable();
 };
 
-const dropAllTables = ()=>{
-    dropConsumerTable();
-    
-};
-
-pool.on('remove',()=>{
-    console.log('dced');
-    process.exit(0);
-
+pool.on("remove", () => {
+  console.log("dced");
+  process.exit(0);
 });
 
-module.exports= {
-    createAllTables,
-    dropAllTables
+module.exports = {
+  createAllTables,
+  dropAllTables,
 };
 
-require('make-runnable/custom')({
-    printOutputFrame: false
-  });
+require("make-runnable/custom")({
+  printOutputFrame: false,
+});
