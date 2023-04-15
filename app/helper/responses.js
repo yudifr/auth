@@ -1,10 +1,3 @@
-/*
- * @Author: aldiferdiyan
- * @Date:   2019-02-19 01:01:24
- * @Last Modified by:   aldiferdiyan
- * @Last Modified time: 2019-02-19 19:49:41
- */
-
 function ok(status, values, reply) {
   return reply.send({
     status: status,
