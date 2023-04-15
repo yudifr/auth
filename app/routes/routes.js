@@ -1,14 +1,14 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const consumer = require('./consumer');
+let user = require("./user");
 
-router.use((req,res,next)=>{
-    if (req.headers['app-origins']) {
-        next();
-    } else {
-        res.json('direct access not allowed');
-    }
+router.use((req, res, next) => {
+  if (req.headers["app-origins"]) {
+    next();
+  } else {
+    res.json("direct access not allowed");
+  }
 });
 
-router.use('/consumer',consumer);
+router.use("/auth", user);
 module.exports = router;
