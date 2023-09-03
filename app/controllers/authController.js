@@ -2,7 +2,8 @@
 const db = require("../database/pool");
 const response = require("../helper/responses");
 exports.getAnyLoggedInUser = async (req, res) => {
-  var query = "select * from users where is_active ";
+  const { username, cache } = req.body;
+  var query = `   select * from users where username = '${username}' and cache = '${cache}'`;
   try {
     const result = await db.query(query);
     console.log(query, result);
@@ -13,7 +14,8 @@ exports.getAnyLoggedInUser = async (req, res) => {
   }
 };
 exports.logout = async (req, res) => {
-  var query = "UPDATE users set is_active = FALSE";
+  const { username } = req.body;
+  var query = `UPDATE users set cache = 'NULL' where username = '${username}'`;
   try {
     const result = await db.query(query);
     if (result.rowCount == 0) {
@@ -25,18 +27,23 @@ exports.logout = async (req, res) => {
   }
 };
 exports.login = async (req, res) => {
-  const { username } = req.body;
-  console.log(username);
+  const { username, password, cache } = req.body;
+  console.log(username, password, cache);
+  var loginQuery = `select * from users where username = '${username}' and password = '${password}'`;
   var query = `
         UPDATE users SET
-        is_active = TRUE
+        cache = '${cache}'
         WHERE username = '${username}'
         `;
   try {
+    const loginResult = await db.query(loginQuery);
     const result = await db.query(query);
     console.log(result);
-    if (result.rowCount == 0) {
-      return response.badRequest("no user with given username", res);
+    if (!loginResult.rows?.length) {
+      return response.badRequest(
+        "Something's wrong with your login information",
+        res
+      );
     }
     return response.ok("ok", result, res);
   } catch (error) {
@@ -67,12 +74,11 @@ exports.updateUser = async (req, res) => {
   }
 };
 exports.register = async (req, res) => {
-  const { username, is_active, type, user_id } = req.body;
-  let isValActive = is_active && is_active?.toLowerCase() == "true";
+  const { username, type, user_id, isValActive } = req.body;
   console.log(isValActive, typeof isValActive);
   var query = `
-        INSERT INTO users (username, is_active, type,user_id) VALUES(
-          '${username}','${isValActive}','${type}','${user_id}'
+        INSERT INTO users (username,   type,user_id) VALUES(
+          '${username}' ,'${type}','${user_id}'
             )
             RETURNING username
         `;
