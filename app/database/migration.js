@@ -15,7 +15,16 @@ function poolQuery(query) {
     });
 }
 function createUserTable() {
-  const query = `CREATE TABLE IF NOT EXISTS users (username Varchar(30) PRIMARY KEY,  is_active Boolean,type VARCHAR(1), user_id Varchar(30))
+  const query = `CREATE TABLE IF NOT EXISTS users 
+  (
+  username Varchar(30) PRIMARY KEY,
+  no_telp VARCHAR(15), 
+  email VARCHAR(40), 
+  password Varchar(30),
+  type VARCHAR(1),
+  user_id Varchar(30),
+  cache_key Varchar(100)
+  )
     `;
   poolQuery(query);
 }

@@ -2,8 +2,8 @@
 const db = require("../database/pool");
 const response = require("../helper/responses");
 exports.getAnyLoggedInUser = async (req, res) => {
-  const { username, cache } = req.body;
-  var query = `   select * from users where username = '${username}' and cache = '${cache}'`;
+  const { username, cache_key } = req.body;
+  var query = `   select * from users where username = '${username}' and cache_key = '${cache_key}'`;
   try {
     const result = await db.query(query);
     console.log(query, result);
@@ -15,7 +15,7 @@ exports.getAnyLoggedInUser = async (req, res) => {
 };
 exports.logout = async (req, res) => {
   const { username } = req.body;
-  var query = `UPDATE users set cache = 'NULL' where username = '${username}'`;
+  var query = `UPDATE users set cache_key = 'NULL' where username = '${username}'`;
   try {
     const result = await db.query(query);
     if (result.rowCount == 0) {
@@ -27,12 +27,12 @@ exports.logout = async (req, res) => {
   }
 };
 exports.login = async (req, res) => {
-  const { username, password, cache } = req.body;
-  console.log(username, password, cache);
+  const { username, password, cache_key } = req.body;
+  console.log(username, password, cache_key);
   var loginQuery = `select * from users where username = '${username}' and password = '${password}'`;
   var query = `
         UPDATE users SET
-        cache = '${cache}'
+        cache_key = '${cache_key}'
         WHERE username = '${username}'
         `;
   try {
@@ -74,11 +74,12 @@ exports.updateUser = async (req, res) => {
   }
 };
 exports.register = async (req, res) => {
-  const { username, type, user_id, isValActive } = req.body;
-  console.log(isValActive, typeof isValActive);
+  const { username, type, user_id, password, no_telp, email, cache_key } =
+    req.body;
+  console.log(username, type, user_id);
   var query = `
-        INSERT INTO users (username,   type,user_id) VALUES(
-          '${username}' ,'${type}','${user_id}'
+        INSERT INTO users (username,password,no_telp,email,cache_key,  type,user_id) VALUES(
+          '${username}' ,'${password}','${no_telp}','${email}','${cache_key}','${type}','${user_id}'
             )
             RETURNING username
         `;
