@@ -23,6 +23,7 @@ function invalid(status, values, reply) {
 }
 
 function badRequest(status, val, reply) {
+  console.log(reply);
   return reply.send({
     status: status,
     statusCode: 400,

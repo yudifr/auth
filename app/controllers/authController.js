@@ -1,12 +1,16 @@
 //simple af login
 const db = require("../database/pool");
 const response = require("../helper/responses");
-exports.getAnyLoggedInUser = async (req, res) => {
-  const { username, cache_key } = req.body;
-  var query = `   select * from users where username = '${username}' and cache_key = '${cache_key}'`;
+exports.getUserData = async (req, res) => {
+  const { username } = req.body;
+  console.log(req.body, username);
+  var query = `   select * from users where username = '${username}'`;
   try {
     const result = await db.query(query);
     console.log(query, result);
+    if (result.rowCount == 0) {
+      return response.badRequest("no data", res);
+    }
     return response.ok("ok", result.rows, res);
   } catch (error) {
     console.log(query, error);
